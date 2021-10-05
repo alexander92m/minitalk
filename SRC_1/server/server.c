@@ -1,58 +1,88 @@
-// make fclean && make && make clean && ./server && ./client
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wadina <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/05 05:04:01 by wadina            #+#    #+#             */
+/*   Updated: 2021/10/05 05:04:17 by wadina           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../minitalk.h"
 
-#include <stdio.h>
+t_msg	g_msg;
 
-
-int bin2dec(int n)
+void	ft_msg_recieve(int sig, siginfo_t *info, void *context)
 {
-  int num;
-  int dec_value;
-  int base;
-  int temp;
-  int last_digit;
-    
-  num = n;
-  base = 1;
-  dec_value = 0;
-  temp = num;
-  while (temp)
-  {
-    last_digit = temp % 10;
-    temp = temp / 10;
-    dec_value += last_digit * base;
-    base = base * 2;
-  }
-  return dec_value;
+	struct sigaction	sa;
+
+	context = NULL;
+	if (sig == SIGUSR2)
+		g_msg.txt[g_msg.bits / 8] += 1 << (g_msg.bits % 8);
+	g_msg.bits++;
+	if (g_msg.bits / 8 == g_msg.len)
+	{
+		write(1, g_msg.txt, g_msg.len);
+		ft_putchar_fd('\n', 1);
+		free(g_msg.txt);
+		g_msg = (t_msg){0, 0, 0};
+		sa.sa_flags = SA_SIGINFO;
+		sa.sa_sigaction = ft_len_recieve;
+		sigaction(SIGUSR1, &sa, 0);
+		sigaction(SIGUSR2, &sa, 0);
+	}
+	kill(info->si_pid, SIGUSR1);
 }
 
-
-void	ft_handler(int signum, siginfo_t *sig, void *context)
+static void	ft_check_err(siginfo_t *info)
 {
-
-	ft_putstr_fd("HANDLER 1 IS ACTIVE\n", 1);
-	printf("signum=%d, sig=%p, context=%p\n", signum, sig, context);
-	printf("sig->pid=%d, sig->signo=%d, sig->code=%d\n", sig->si_pid, sig->si_signo, sig->si_code);
+	if (!g_msg.txt)
+	{
+		ft_putstr_fd(S_ER_MESSAGE, 2);
+		kill(info->si_pid, SIGUSR2);
+		exit(1);
+	}
 }
 
+void	ft_len_recieve(int sig, siginfo_t *info, void *context)
+{
+	size_t				i;
+	struct sigaction	sa;
 
-int main(int ac, char **av)
+	context = NULL;
+	if (sig == SIGUSR2)
+		g_msg.len += 1 << g_msg.bits;
+	g_msg.bits++;
+	if (g_msg.bits == sizeof(g_msg.len) << 3)
+	{
+		g_msg.txt = malloc(g_msg.len + 1);
+		ft_check_err(info);
+		i = 0;
+		while (i <= g_msg.len)
+			g_msg.txt[i++] = 0;
+		g_msg.bits = 0;
+		sa.sa_flags = SA_SIGINFO;
+		sa.sa_sigaction = ft_msg_recieve;
+		sigaction(SIGUSR1, &sa, 0);
+		sigaction(SIGUSR2, &sa, 0);
+	}
+	kill(info->si_pid, SIGUSR1);
+}
+
+int	main(void)
 {
 	struct sigaction	siga;
 
-	if (ac != 1)
-		ft_putstr_fd("Error arguments\n", 1);
-	ft_putstr_fd("Server started!\nPID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
+	ft_putchar_fd('\n', 1);
+	g_msg = (t_msg){0, 0, 0};
 	siga.sa_flags = SA_SIGINFO;
-	siga.sa_sigaction = ft_handler1;
+	siga.sa_sigaction = ft_len_recieve;
 	sigaction(SIGUSR1, &siga, NULL);
-	if ((sigaction(SIGUSR1, &siga, 0)) == -1)
-		ft_putstr_fd("Error sigaction\n", 1);
-	if ((sigaction(SIGUSR2, &siga, 0)) == -1)
-		ft_putstr_fd("Error sigaction\n", 1);
+	sigaction(SIGUSR2, &siga, NULL);
 	while (1)
 		pause();
-	ft_putstr_fd("Exit\n", 1);
+	return (0);
 }

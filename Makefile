@@ -9,12 +9,12 @@ LIBFTDIR	=	SRC_0/libft
 LIBFT		=	$(LIBFTDIR)/libft.a
 HEADER		=	SRC_1/minitalk.h
 #REMOVE -g before push in school git
-CFLAGS		=	-Wall -Werror -Wextra -g
+CFLAGS		=	-Wall -Werror -Wextra
 CC			=	clang
 
 all			:	$(NAME)
 
-$(NAME)		:	$(SERVER) $(CLIENT)
+$(NAME)		:	$(SERVER) $(CLIENT) 
 
 $(SERVER)	:	$(OBJ_S) $(LIBFT)
 			$(CC) -o $@ $(OBJ_S) $(LIBFT)
@@ -22,10 +22,10 @@ $(SERVER)	:	$(OBJ_S) $(LIBFT)
 $(CLIENT)	:	$(OBJ_C) $(LIBFT)
 			$(CC) -o $@ $(OBJ_C) $(LIBFT)
 
-$(LIBFT)	:
+$(LIBFT)	: Makefile $(HEADER)
 			make -C $(LIBFTDIR)
 
-%.o			:	%.c $(HEADER) Makefile
+%.o			:	%.c Makefile $(HEADER)
 			$(CC) $(CFLAGS) -c $< -o $@
 
 clean		:

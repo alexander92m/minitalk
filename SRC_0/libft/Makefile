@@ -19,7 +19,7 @@ all : $(NAME)
 $(NAME) : $(OBJ)
 	$(AR) $(ARFLAGS) $@ $?
 
-%.o : %.c $(LH)
+%.o : %.c $(LH) Makefile
 	$(CC) $(CFLAGS) -c $<
 
 clean :
