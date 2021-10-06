@@ -34,7 +34,7 @@ void	send_len(pid_t pid, size_t len)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(500);
+		usleep(20000);
 	}
 }
 
@@ -49,7 +49,7 @@ void	send_message(pid_t pid, char msg)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(500);
+		usleep(20000);
 	}
 }
 
@@ -75,5 +75,5 @@ int	main(int argc, char **argv)
 	send_len(pid, len);
 	while (argv[2][0])
 		send_message(pid, *(argv[2]++));
-	usleep(500);
+	usleep(20000);
 }

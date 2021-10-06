@@ -12,8 +12,8 @@
 
 #ifndef MINITALK_H
 # define MINITALK_H
-# define SUCC_MESSAGE "client: sending a signal has been completed!\n"
-# define FAIL_MESSAGE "client: sending a message has failed!\n"
+# define SUCC_MESSAGE "SIGNAL OK\n"
+# define FAIL_MESSAGE "SIGNAL KO\n"
 # define C_ER1_MESSAGE "client: Wrong number of arguments!\n"
 # define C_ER2_MESSAGE "client: Wrong server's PID\n"
 # define S_ER_MESSAGE "server: Error!"

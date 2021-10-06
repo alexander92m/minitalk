@@ -1,14 +1,13 @@
 NAME		=	minitalk
 SERVER		=	server
 CLIENT		=	client
-SRC_S		=	$(wildcard SRC_1/server/*.c)
-SRC_C		=	$(wildcard SRC_1/client/*.c)
+SRC_S		=	SRC_1/server/server.c
+SRC_C		=	SRC_1/client/client.c
 OBJ_S		=	$(SRC_S:.c=.o)
 OBJ_C		=	$(SRC_C:.c=.o)
 LIBFTDIR	=	SRC_0/libft
 LIBFT		=	$(LIBFTDIR)/libft.a
 HEADER		=	SRC_1/minitalk.h
-#REMOVE -g before push in school git
 CFLAGS		=	-Wall -Werror -Wextra
 CC			=	clang
 
@@ -22,7 +21,7 @@ $(SERVER)	:	$(OBJ_S) $(LIBFT)
 $(CLIENT)	:	$(OBJ_C) $(LIBFT)
 			$(CC) -o $@ $(OBJ_C) $(LIBFT)
 
-$(LIBFT)	: Makefile $(HEADER)
+$(LIBFT)	: Makefile
 			make -C $(LIBFTDIR)
 
 %.o			:	%.c Makefile $(HEADER)
