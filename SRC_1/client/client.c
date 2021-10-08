@@ -12,8 +12,11 @@
 
 #include "../minitalk.h"
 
-void	confirm_reception(int sig)
+
+void	confirm_reception(int sig, siginfo_t *info, void *context)
 {
+	(void)context;
+	(void)info;
 	if (sig != SIGUSR1)
 	{
 		ft_putstr_fd(FAIL_MESSAGE, 2);
@@ -27,6 +30,7 @@ void	send_len(pid_t pid, size_t len)
 {
 	size_t	i;
 
+
 	i = 0;
 	while (i < sizeof(len) * 8)
 	{
@@ -34,7 +38,8 @@ void	send_len(pid_t pid, size_t len)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(20000);
+		
+		pause();
 	}
 }
 
@@ -49,22 +54,26 @@ void	send_message(pid_t pid, char msg)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(20000);
+		pause();
 	}
 }
 
+
 int	main(int argc, char **argv)
 {	
-	pid_t	pid;
-	size_t	len;
+	pid_t				pid;
+	size_t				len;
+	struct sigaction	siga;
 
 	if (argc != 3)
 	{
 		ft_putstr_fd(C_ER1_MESSAGE, 2);
 		exit(1);
 	}
-	signal(SIGUSR1, confirm_reception);
-	signal(SIGUSR2, confirm_reception);
+	siga.sa_flags = SA_SIGINFO;
+	siga.sa_sigaction = confirm_reception;
+	sigaction(SIGUSR1, &siga, NULL);
+	sigaction(SIGUSR2, &siga, NULL);
 	len = ft_strlen(argv[2]);
 	pid = atoi(argv[1]);
 	if (kill(pid, 0) != 0)
@@ -74,6 +83,8 @@ int	main(int argc, char **argv)
 	}
 	send_len(pid, len);
 	while (argv[2][0])
+	{
 		send_message(pid, *(argv[2]++));
-	usleep(20000);
+	}
+		
 }
