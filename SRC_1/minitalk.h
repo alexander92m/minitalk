@@ -25,8 +25,9 @@
 typedef struct s_msg
 {
 	size_t			len;
-	unsigned char	*txt;
+	unsigned char	c;
 	size_t			bits;
+	int				mes;
 }				t_msg;
 
 void	ft_len_recieve(int sig, siginfo_t *info, void *context);
