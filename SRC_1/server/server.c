@@ -28,39 +28,25 @@ t_msg	g_msg;
 
 void	ft_len_recieve(int sig, siginfo_t *info, void *context)
 {
-	printf("CHECK 0, pid=%d, g_msg.bits=%zu, g_msg.len=%zu\n", info->si_pid, g_msg.bits, g_msg.len);
+	(void)context;
 	if (info->si_pid == 0)
 		exit(1);
-	context = NULL;
-	if (g_msg.bits < 64)
+	if (sig == SIGUSR2)
+		g_msg.c += (1 << (g_msg.bits % 8));
+	g_msg.bits++;
+	// printf("CHECK 2, pid=%d, g_msg.bits=%zu ", info->si_pid, g_msg.bits);
+
+	// printf("c=%d, b=%zu\n", g_msg.c, g_msg.bits);
+	if (g_msg.bits % 8 == 0)
 	{
-		if (sig == SIGUSR2)
-			g_msg.len = g_msg.len + (1 << g_msg.bits);
-		g_msg.bits++;
+		write(1, &g_msg.c, 1);
+		g_msg.c = 0;
+		g_msg.bits = 0;
 	}
-	else
-	{
-		if (sig == SIGUSR2)
-			g_msg.c = g_msg.c + (1 << ((g_msg.bits - 64) % 8));
-		g_msg.bits++;
-		if ((g_msg.bits - 64) % 8 == 0)
-		{
-			printf("|");
-			write(1, &g_msg.c, 1);
-			g_msg.c = 0;
-		}
-		if ((g_msg.bits - 64) / 8 == g_msg.len)
-		{
-			write(1, "\n", 1);
-			printf("CHECK 1, pid=%d, g_msg.bits=%zu, g_msg.len=%zu\n", info->si_pid, g_msg.bits, g_msg.len);
-	
-			g_msg = (t_msg){0};
-		}
-	}
-	printf("CHECK 2, pid=%d, g_msg.bits=%zu, g_msg.len=%zu\n", info->si_pid, g_msg.bits, g_msg.len);
 	kill(info->si_pid, SIGUSR1);
 }
-
+// printf("CHECK 2, pid=%d, g_msg.bits=%zu, g_msg.len=%zu\n", info->si_pid, g_msg.bits, g_msg.len);
+	
 int	main(void)
 {
 	struct sigaction	siga;
@@ -74,6 +60,5 @@ int	main(void)
 	sigaction(SIGUSR2, &siga, NULL);
 	while (1)
 		pause();
-	
 	return (0);
 }

@@ -81,7 +81,6 @@ int	main(int argc, char **argv)
 		ft_putstr_fd(C_ER2_MESSAGE, 2);
 		exit(1);
 	}
-	send_len(pid, len);
 	while (argv[2][0])
 	{
 		send_message(pid, *(argv[2]++));
