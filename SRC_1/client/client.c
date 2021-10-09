@@ -71,6 +71,9 @@ int	main(int argc, char **argv)
 		exit(1);
 	}
 	siga.sa_flags = SA_SIGINFO;
+	sigemptyset(&siga.sa_mask);
+	sigaddset(&siga.sa_mask, SIGUSR1);
+	sigaddset(&siga.sa_mask, SIGUSR2);
 	siga.sa_sigaction = confirm_reception;
 	sigaction(SIGUSR1, &siga, NULL);
 	sigaction(SIGUSR2, &siga, NULL);
