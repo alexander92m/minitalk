@@ -10,40 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minitalk.h"
+#include "minitalk.h"
 
-
-void	confirm_reception(int sig, siginfo_t *info, void *context)
+static void	confirm_reception(int sig, siginfo_t *info, void *context)
 {
-	(void)context;
+	(void)sig;
 	(void)info;
-	if (sig != SIGUSR1)
-	{
-		ft_putstr_fd(FAIL_MESSAGE, 2);
-		exit(1);
-	}
-	else
-		ft_putstr_fd(SUCC_MESSAGE, 1);
+	(void)context;
+	ft_putstr_fd(SUCC_MESSAGE, 1);
+	usleep(50);
 }
 
-void	send_len(pid_t pid, size_t len)
-{
-	size_t	i;
-
-
-	i = 0;
-	while (i < sizeof(len) * 8)
-	{
-		if (((len >> i++) & 1) == 0)
-			kill(pid, SIGUSR1);
-		else
-			kill(pid, SIGUSR2);
-		
-		pause();
-	}
-}
-
-void	send_message(pid_t pid, char msg)
+static void	send_message(pid_t pid, char msg)
 {
 	size_t	i;
 
@@ -54,39 +32,42 @@ void	send_message(pid_t pid, char msg)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		pause();
+		usleep(1000);
 	}
 }
 
-
-int	main(int argc, char **argv)
-{	
-	pid_t				pid;
-	size_t				len;
-	struct sigaction	siga;
-
+static void	check_err1(int argc)
+{
 	if (argc != 3)
 	{
 		ft_putstr_fd(C_ER1_MESSAGE, 2);
 		exit(1);
 	}
-	siga.sa_flags = SA_SIGINFO;
-	sigemptyset(&siga.sa_mask);
-	sigaddset(&siga.sa_mask, SIGUSR1);
-	sigaddset(&siga.sa_mask, SIGUSR2);
-	siga.sa_sigaction = confirm_reception;
-	sigaction(SIGUSR1, &siga, NULL);
-	sigaction(SIGUSR2, &siga, NULL);
-	len = ft_strlen(argv[2]);
-	pid = atoi(argv[1]);
-	if (kill(pid, 0) != 0)
+}
+
+static void	check_err2(int pid)
+{
+	if (kill(pid, 0))
 	{
 		ft_putstr_fd(C_ER2_MESSAGE, 2);
 		exit(1);
 	}
-	while (argv[2][0])
-	{
+}
+
+int	main(int argc, char **argv)
+{	
+	pid_t				pid;
+	struct sigaction	sa;
+
+	check_err1(argc);
+	pid = atoi(argv[1]);
+	check_err2(pid);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = confirm_reception;
+	if (sigaction(SIGUSR1, &sa, NULL) == -1
+		|| sigaction(SIGUSR2, &sa, NULL) == -1)
+		return (-1);
+	while (*(argv[2]))
 		send_message(pid, *(argv[2]++));
-	}
-		
+	send_message(pid, '\n');
 }

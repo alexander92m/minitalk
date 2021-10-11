@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   minitalk_bonus.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wadina <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/05 05:04:33 by wadina            #+#    #+#             */
-/*   Updated: 2021/10/05 05:05:49 by wadina           ###   ########.fr       */
+/*   Created: 2021/10/10 02:26:38 by wadina            #+#    #+#             */
+/*   Updated: 2021/10/10 02:26:44 by wadina           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#ifndef MINITALK_BONUS_H
+# define MINITALK_BONUS_H
 # define SUCC_MESSAGE "client: SIGNAL OK\n"
 # define C_ER1_MESSAGE "client: Wrong number of arguments!\n"
 # define C_ER2_MESSAGE "client: Wrong server's PID\n"
