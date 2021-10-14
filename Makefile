@@ -29,6 +29,12 @@ $(SERVER)		:	$(OBJ_S) $(LIBFT)
 $(CLIENT)		:	$(OBJ_C) $(LIBFT)
 				$(CC) -o $@ $(OBJ_C) $(LIBFT)
 
+%_bonus.o		:	%_bonus.c Makefile $(HEADER_B)
+				$(CC) $(CFLAGS) -c $< -o $@
+
+%.o				:	%.c Makefile $(HEADER)
+				$(CC) $(CFLAGS) -c $< -o $@
+
 bonus			:	$(SERVER_B) $(CLIENT_B) 
 
 $(SERVER_B) 	:	$(OBJ_S_B) $(LIBFT)
@@ -39,9 +45,6 @@ $(CLIENT_B)	:	$(OBJ_C_B) $(LIBFT)
 
 $(LIBFT)		: Makefile
 				make -C $(LIBFTDIR)
-
-%_bonus.o		:	%_bonus.c Makefile $(HEADER_B)
-				$(CC) $(CFLAGS) -c $< -o $@
 
 clean			:
 				rm -f $(OBJ_S) $(OBJ_C) $(OBJ_S_B) $(OBJ_C_B)

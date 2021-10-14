@@ -64,8 +64,7 @@ int	main(int argc, char **argv)
 	check_err2(pid);
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = confirm_reception;
-	if (sigaction(SIGUSR1, &sa, NULL) == -1
-		|| sigaction(SIGUSR2, &sa, NULL) == -1)
+	if (sigaction(SIGUSR1, &sa, NULL) == -1)
 		return (-1);
 	while (*(argv[2]))
 		send_message(pid, *(argv[2]++));
